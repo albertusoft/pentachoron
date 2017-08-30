@@ -1,0 +1,19 @@
+ANDROID_NDK_ROOT=/opt/android/ndk
+ANDROID_SDK_ROOT=/opt/android/sdk
+ANDROID_API_LEVEL="android-25"
+ARM_TOOLCHAIN=/opt/android/standalone/arm-linux-androideabi-4.9
+
+# Android Build
+ANDROID_QT_ROOT=/opt/Qt-5.9/5.9/android_armv7
+ANDROID_BUILD_PATH=build/android-release
+ANDROID_BUILD_TYPE=Release
+ANDROID_DEPLOY_QT_KEYSTOREPATH="/data/work/doc/PRIVATE/keys/mbi-android-dev.jks"
+ANDROID_DEPLOY_QT_CERTIFICATEALIAS="apk-release"
+ANDROID_DEPLOY_QT_STOREPASS="*****"
+ANDROID_DEPLOY_QT_KEYPASS="*****"
+JAVA_HOME=/opt/jdk1.8.0_131
+
+# Linux Build
+LINUX_QT_ROOT=/opt/Qt-5.9/5.9/gcc_64
+LINUX_BUILD_PATH=build/linux-debug
+LINUX_BUILD_TYPE=RelWidthDebInfo

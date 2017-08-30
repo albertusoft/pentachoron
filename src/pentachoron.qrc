@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pentachoron_main.qml</file>
+	<file>MainScreen.qml</file>
+	<file>HelpScreen.qml</file>
+	<file>LicenseScreen.qml</file>
+	<file>FullDial.qml</file>
+	<file>StyledCheckBox.qml</file>
+	<file>StyledComboBox.qml</file>
+	<file>SphereEntity.qml</file>
+	<file>CylinderEntity.qml</file>
+	<file>CoordinateSystem.qml</file>
+	<file>EmittingMaterial.qml</file>
+	<file>DefaultNumberAnimation.qml</file>
+	<file>../resources/doc/help.html</file>
+	<file>../resources/doc/qt-5.9-lgpl.html</file>
+    </qresource>
+</RCC>
