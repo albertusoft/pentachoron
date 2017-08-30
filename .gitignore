@@ -37,3 +37,9 @@ Makefile*
 # QtCtreator CMake
 CMakeLists.txt.user*
 
+# ...
+/.kdev4
+*.kdev4
+/scripts/local.conf
+/build
+
