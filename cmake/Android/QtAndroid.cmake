@@ -98,10 +98,10 @@ macro( add_program _targetName )
 	set( ANDROID_APPLICATION_LIBRARIES_FULLPATHS ${ANDROID_APPLICATION_LIBRARIES_FULLPATHS_${_targetName}} ) # <---- TODO: put linked libraries here
 	set( ANDROID_CUSTOM_SOURCES_DIRS ${ANDROID_CUSTOM_SOURCES_DIRS_${_targetName}} )
 	set( ANDROID_CUSTOM_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/APP/${_targetName}_customsrc )
-#	if( CMAKE_BUILD_TYPE MATCHES "Release" )
-#		set( ANDROID_DEPLOY_QT_RELEASE ON )
-#		message( STATUS "ANDROID_DEPLOY_QT_RELEASE=ON" )
-#	endif()
+	if( CMAKE_BUILD_TYPE MATCHES "Release" )
+		set( ANDROID_DEPLOY_QT_RELEASE ON )
+		message( STATUS "ANDROID_DEPLOY_QT_RELEASE=ON" )
+	endif()
 
 	## Copy the android templates from qt install folder
 	## This line it should be in qt cmake files

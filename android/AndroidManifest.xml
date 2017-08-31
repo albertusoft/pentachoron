@@ -56,12 +56,6 @@
 
 		</activity>
 
-		<service
-			android:name="com.cortexview.CortexViewLib.CortexViewLibService"
-			android:enabled="true"
-			android:exported="false" >
-		</service>
-
 	</application>
 
 	<uses-sdk android:minSdkVersion="16" android:targetSdkVersion="25"/>
