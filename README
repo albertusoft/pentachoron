@@ -2,7 +2,10 @@
 
 - Four dimensional rotation visualizer -
 
-This application visualize the rotation of the simplest four dimensional object, the pentachoron. It could rotate the object around the six basic planes with simple-, double- and isoclinic-rotation types. This application was inspired by the book Epoch.import CortexViewLib 1.0
+This application visualize the rotation of the simplest four dimensional object, the pentachoron[1]. It could rotate the object around the six basic planes with simple-, double- and isoclinic-rotation types. This application was inspired by the book Epoch[2].
+
+[1] https://en.wikipedia.org/wiki/5-cell
+[2] http://www.specularium.org/peter-j-carroll/the-epoch
 
 Send any feedback to <adeptalbert@gmail.com>
 
