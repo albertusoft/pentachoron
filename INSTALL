@@ -15,14 +15,14 @@ Steps of linux build:
 # make
 binary output: 'build/linux-debug/pentachoron'
 
-Steps if android build:
+Steps of android build:
 # cd scripts
 # ./configure-for-android.sh
 # cd ../build/android-release
 # make
 binary output: 'build/android-release/APP/pentachoron/bin/QtApp-release-signed.apk'
 
-Tool versions of developer's platform:
+Tool versions on developer's platform:
   - Ubuntu Linux 14.04
   - Qt 5.9.1
   - Android SDK Tools 25.2.5
