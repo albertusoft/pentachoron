@@ -1,6 +1,6 @@
 INSTALL Quick Guide
 
-Install Qt, Android-SDK, Andoid-NDK
+Install Qt, JDK, Android-SDK, Andoid-NDK
 
 For android build:
  - export ARM toolchain from Adnroid-NDK:
@@ -29,5 +29,5 @@ Tool versions of developer's platform:
   - Android ADK Build-tools 25.0.3
   - Android SDK Platform 24-45
   - Android Support Repository Rev.47
-
+  - jdk1.8.0_131
 
