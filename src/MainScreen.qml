@@ -42,187 +42,11 @@ Rectangle {
 	property real side: (width < height) ? width : height
 	property real gap: side * 0.01
 
-	property matrix4x4 rotationMatrix // it is an identiry matrix at initialization
+	property variant _PLANES: [ "xy", "xz", "yz", "xw", "yw", "zw" ]
 
-	function constructRotatinMatrix( angle1, angle2, plane, doubleFlag, isoclinicFlag ) {
-
-		function idx(row,column) {
-			return (row-1) * 4 + (column-1)
-		}
-
-		function makeCosineMat( alpha, plane, invFlag ) {
-
-			var data = new Array(16);
-			var axes = [ false, false, false, false ]
-
-			for ( var i=0; i<16; ++i ) data[i] = Math.sin(alpha)
-			data[idx(1,1)] = data[idx(2,2)] = data[idx(3,3)] = data[idx(4,4)] = Math.cos(alpha)
-			data[idx(1,2)] *= -1.0; data[idx(1,4)] *= -1.0; data[idx(2,3)] *= -1.0; data[idx(3,1)] *= -1.0; data[idx(3,4)] *= -1.0; data[idx(4,2)] *= -1.0
-
-			for ( var j=0; j<plane.length; ++j ) {
-				var ch = plane.charAt(j)
-				if ( ch == 'x' ) { axes[0] = true }
-				if ( ch == 'y' ) { axes[1] = true }
-				if ( ch == 'z' ) { axes[2] = true }
-				if ( ch == 'w' ) { axes[3] = true }
-			}
-
-			if ( invFlag ) {
-				for ( var i=0; i<axes.length; ++i ) {
-					axes[i] = !axes[i]
-				}
-			}
-
-			for ( var j=1; j<=axes.length; ++j ) {
-				if ( axes[j-1] ) {
-					for ( var i=0; i<4; ++i ) {
-						data[idx(j,i)] = NaN // will be 0.0 after we call replacenums()
-						data[idx(i,j)] = NaN // will be 0.0 after we call replacenums()
-					}
-					data[idx(j,j)] = 1/0 // will be 1.0 after we call replacenums()
-				}
-			}
-
-			return data;
-		}
-
-		function mergedata( data1, data2 ) {
-			var newdata = new Array(data1.length);
-			for ( var i=0; i<newdata.length; ++i ) {
-				if ( (!isNaN(data1[i])) && (data1[i] != 1/0) ) { newdata[i] = data1[i] }
-				if ( (!isNaN(data2[i])) && (data2[i] != 1/0) ) { newdata[i] = data2[i] }
-			}
-			return newdata
-		}
-
-		function replacenums( data ) {
-			for ( var i=0; i<data.length; ++i ) {
-				if ( isNaN(data[i]) ) { data[i] = 0.0 }
-				if ( data[i] == 1/0 ) { data[i] = 1.0 }
-			}
-			return data
-		}
-
-		if ( doubleFlag && isoclinicFlag ) {
-			var data1 = makeCosineMat( angle1 * Math.PI / 180, plane, false )
-			var data2 = makeCosineMat( angle1 * Math.PI / 180, plane, true )
-			return Qt.matrix4x4( replacenums( mergedata( data1, data2 ) ) )
-		} else if ( doubleFlag ) {
-			var data1 = makeCosineMat( angle1 * Math.PI / 180, plane, false )
-			var data2 = makeCosineMat( angle2 * Math.PI / 180, plane, true )
-			return Qt.matrix4x4( replacenums( mergedata( data1, data2 ) ) )
-		} else {
-			return Qt.matrix4x4( replacenums( makeCosineMat( angle1 * Math.PI / 180, plane, false ) ) )
-		}
-	}
-
-	function updateRotationMatrix() {
-		mainScreen.rotationMatrix = constructRotatinMatrix(
-			dialItem1.value,
-			dialItem2.value,
-			planeSelectorCombo.currentText,
-			doublerotCheckBox.checkState==Qt.Checked,
-			isoclinicrotCheckBox.checkState==Qt.Checked
-		)
-	}
-
-	FullDial {
-		id: dialItem1
-		x: mainScreen.width * 0.5 - mainScreen.gap - width
-		y: controls.y + controls.height + mainScreen.gap
-		width: side - 2*gap
-		height: side - 2*gap
-		color: "#203020"
-		property real side: (mainScreen.height-y < mainScreen.width*0.5) ? mainScreen.height-y : mainScreen.width*0.5
-		property real anumatedValue: 0.0
-		property real animatedOffset: 0.0
-		onValueChanged: {
-			updateRotationMatrix()
-			animatedOffset = value - anumatedValue
-		}
-		onAnumatedValueChanged: {
-			value = anumatedValue + animatedOffset
-		}
-	}
-
-	FullDial {
-		id: dialItem2
-		x: mainScreen.width * 0.5 + mainScreen.gap
-		y: controls.y + controls.height + mainScreen.gap
-		width: side - 2*gap
-		height: side - 2*gap
-		color: "#203020"
-		enabled: (doublerotCheckBox.checkState == Qt.Checked) && (isoclinicrotCheckBox.checkState == Qt.Unchecked)
-		property real side: (mainScreen.height-y < mainScreen.width*0.5) ? mainScreen.height-y : mainScreen.width*0.5
-		onValueChanged: {
-			updateRotationMatrix()
-		}
-	}
-
-	Rectangle {
-		id: controls
-		x: gap
-		y: gap + scene.height + gap
-		width: mainScreen.width-2*gap
-		height: mainScreen.height*0.1
-		color: Qt.lighter( mainScreen.color, 1.2 )
-
-		property real w: width / 4
-
-		StyledComboBox {
-			id: planeSelectorCombo
-			x: gap
-			y: gap
-			width: parent.w - gap
-			height: parent.height - gap*2
-			model: [ "xw", "yw", "zw", "xz", "yz", "xy" ]
-			currentIndex: 5
-			onCurrentTextChanged: {
-				updateRotationMatrix()
-			}
-			styleColor: Qt.lighter( mainScreen.color, 1.4 )
-		}
-
-		StyledCheckBox {
-			id: animateCheckBox
-			x: gap + 1*parent.w
-			y: gap
-			width: parent.w - gap
-			height: parent.height - gap*2
-			text: qsTr("Animate")
-			checkState: Qt.Unchecked
-			onCheckStateChanged: {
-				updateRotationMatrix()
-			}
-		}
-
-		StyledCheckBox{
-			id: doublerotCheckBox
-			x: gap + 2*parent.w
-			y: gap
-			width: parent.w - gap
-			height: parent.height - gap*2
-			text: qsTr("Double")
-			checkState: Qt.Checked
-			onCheckStateChanged: {
-				updateRotationMatrix()
-			}
-		}
-
-		StyledCheckBox {
-			id: isoclinicrotCheckBox
-			x: gap + 3*parent.w
-			y: gap
-			width: parent.w - gap
-			height: parent.height - gap*2
-			text: qsTr("Isoclinic")
-			checkState: Qt.Checked
-			enabled: doublerotCheckBox.checkState == Qt.Checked ? true : false
-			onCheckStateChanged: {
-				updateRotationMatrix()
-			}
-		}
-	}
+	/*------------------------------------------------------------------*+
+	|                                SCENE                               |
+	+*------------------------------------------------------------------*/
 
 	Rectangle {
 		id: scene
@@ -285,103 +109,13 @@ Rectangle {
 					]
 				}
 
-				// ----- Pentachoron 3D projection -----
+				// ----- Pentachoron 3D projection & Coordinate System -----
 				Entity {
-					id: pentachoron3d
-
-					// define pentachoron coords
-					property variant basePoints: [
-						Qt.vector4d(  0.000,  1.000, -0.500, -0.500 ),
-						Qt.vector4d( -0.866, -0.500, -0.500, -0.500 ),
-						Qt.vector4d(  0.866, -0.500, -0.500, -0.500 ),
-						Qt.vector4d(  0.000,  0.000,  0.866, -0.500 ),
-						Qt.vector4d(  0.000,  0.000,  0.000,  0.866 )
-					]
-					property variant points: [
-						mainScreen.rotationMatrix.times( basePoints[0].plus(offset) ),
-						mainScreen.rotationMatrix.times( basePoints[1].plus(offset) ),
-						mainScreen.rotationMatrix.times( basePoints[2].plus(offset) ),
-						mainScreen.rotationMatrix.times( basePoints[3].plus(offset) ),
-						mainScreen.rotationMatrix.times( basePoints[4].plus(offset) )
-					]
-					property variant offset: Qt.vector4d( 0.0, 0.0, 0.0, 0.0 )
 					property real scale: 1.0
-					property color edgeColor: "#A0A0A0"
 
-					SphereEntity {
-						id: greenBall
-						diffuseColor: "#00A000"
-						location: parent.points[0].toVector3d().times(parent.scale)
-					}
-					SphereEntity {
-						id: yellowBall
-						diffuseColor: "#A0A000"
-						location: parent.points[1].toVector3d().times(parent.scale)
-					}
-					SphereEntity {
-						id: orangeBall
-						diffuseColor: "#F07000"
-						location: parent.points[2].toVector3d().times(parent.scale)
-					}
-					SphereEntity {
-						id: redBall
-						diffuseColor: "#A00000"
-						location: parent.points[3].toVector3d().times(parent.scale)
-					}
-					SphereEntity {
-						id: purpleBall
-						diffuseColor: "#A000A0"
-						location: parent.points[4].toVector3d().times(parent.scale)
-					}
-					CylinderEntity {
-						diffuseColor: "#A0A0A0"
-						startPoint: purpleBall.location
-						endPoint: greenBall.location
-					}
-					CylinderEntity {
-						diffuseColor: "#A0A0A0"
-						startPoint: purpleBall.location
-						endPoint: yellowBall.location
-					}
-					CylinderEntity {
-						diffuseColor: "#A0A0A0"
-						startPoint: purpleBall.location
-						endPoint: orangeBall.location
-					}
-					CylinderEntity {
-						diffuseColor: "#A0A0A0"
-						startPoint: purpleBall.location
-						endPoint: redBall.location
-					}
-					CylinderEntity {
-						diffuseColor: parent.edgeColor
-						startPoint: greenBall.location
-						endPoint: yellowBall.location
-					}
-					CylinderEntity {
-						diffuseColor: parent.edgeColor
-						startPoint: yellowBall.location
-						endPoint: orangeBall.location
-					}
-					CylinderEntity {
-						diffuseColor: parent.edgeColor
-						startPoint: orangeBall.location
-						endPoint: greenBall.location
-					}
-					CylinderEntity {
-						diffuseColor: parent.edgeColor
-						startPoint: redBall.location
-						endPoint: greenBall.location
-					}
-					CylinderEntity {
-						diffuseColor: parent.edgeColor
-						startPoint: redBall.location
-						endPoint: yellowBall.location
-					}
-					CylinderEntity {
-						diffuseColor: parent.edgeColor
-						startPoint: redBall.location
-						endPoint: orangeBall.location
+					PentachoronEntity {
+						id: pentachoronEntity
+						scale: parent.scale
 					}
 
 					CoordinateSystem {
@@ -447,6 +181,10 @@ Rectangle {
 
 	} // Rectangle of Scene3D
 
+	/*------------------------------------------------------------------*+
+	|                               CONTROLS                             |
+	+*------------------------------------------------------------------*/
+
 	// Help Button
 	Rectangle {
 		x: mainScreen.width - 2*gap - width
@@ -475,16 +213,356 @@ Rectangle {
 		}
 	}
 
+	TabBar {
+		id: tabBar
+		x: mainScreen.gap
+		y: scene.y + scene.height + gap
+		width: mainScreen.width - 2*mainScreen.gap
+		height: mainScreen.height * 0.05
+
+		background: Rectangle {
+			color: Qt.lighter( mainScreen.color, 1.2 )
+		}
+
+		StyledTabButton {
+			text: qsTr("Basic control")
+			bgColor: mainScreen.color
+			textColor: "#F0F0FF"
+		}
+		StyledTabButton {
+			text: qsTr("Full control")
+			bgColor: mainScreen.color
+			textColor: "#F0F0FF"
+		}
+		StyledTabButton {
+			text: qsTr("Special control")
+			bgColor: mainScreen.color
+			textColor: "#F0F0FF"
+		}
+	}
+
+	StackLayout {
+
+		id: controlLayout
+		x: mainScreen.gap
+		y: tabBar.y + tabBar.height
+		width: tabBar.width
+		height: mainScreen.height - y - mainScreen.gap
+		currentIndex: tabBar.currentIndex
+
+		// ---------- Basic Control ----------
+
+		Rectangle {
+			anchors.fill: parent
+			color: Qt.lighter( mainScreen.color, 1.2 )
+
+			Column {
+				spacing: mainScreen.gap
+
+				Rectangle {
+					width: parent.width
+					height: mainScreen.height * 0.06
+					color: Qt.lighter( mainScreen.color, 1.2 )
+
+					property real w: width / 4
+
+					StyledComboBox {
+						id: planeSelectorCombo
+						x: mainScreen.gap
+						y: mainScreen.gap
+						width: parent.w - gap
+						height: parent.height - gap*2
+						model: mainScreen._PLANES
+						currentIndex: 0
+						onCurrentTextChanged: {
+							updateRotationMatrix()
+						}
+						styleColor: Qt.lighter( mainScreen.color, 1.4 )
+					}
+
+					StyledCheckBox {
+						id: animateCheckBox
+						x: mainScreen.gap + 1*parent.w
+						y: mainScreen.gap
+						width: parent.w - mainScreen.gap
+						height: parent.height - mainScreen.gap*2
+						text: qsTr("Animate")
+						checkState: Qt.Unchecked
+						onCheckStateChanged: {
+							updateRotationMatrix()
+						}
+					}
+
+					StyledCheckBox{
+						id: doublerotCheckBox
+						x: mainScreen.gap + 2*parent.w
+						y: mainScreen.gap
+						width: parent.w - mainScreen.gap
+						height: parent.height - mainScreen.gap*2
+						text: qsTr("Double")
+						checkState: Qt.Unchecked
+						onCheckStateChanged: {
+							updateRotationMatrix()
+						}
+					}
+
+					StyledCheckBox {
+						id: isoclinicrotCheckBox
+						x: mainScreen.gap + 3*parent.w
+						y: mainScreen.gap
+						width: parent.w - mainScreen.gap
+						height: parent.height - mainScreen.gap*2
+						text: qsTr("Isoclinic")
+						checkState: Qt.Unchecked
+						enabled: doublerotCheckBox.checkState == Qt.Checked ? true : false
+						onCheckStateChanged: {
+							updateRotationMatrix()
+						}
+					}
+				}
+
+				Row {
+					spacing: mainScreen.gap
+
+					property real side: Math.min( (controlLayout.width - mainScreen.gap)/2, controlLayout.height )
+
+					FullDial {
+						id: dialItem1
+						width: parent.side
+						height: parent.side
+						color: "#203020"
+						property real animatedValue: 0.0
+						property real animatedOffset: 0.0
+						onValueChanged: {
+							updateRotationMatrix()
+							animatedOffset = value - animatedValue
+						}
+						onAnimatedValueChanged: {
+							value = animatedValue + animatedOffset
+						}
+					}
+
+					FullDial {
+						id: dialItem2
+						width: parent.side
+						height: parent.side
+						color: "#203020"
+						enabled: (doublerotCheckBox.checkState == Qt.Checked) && (isoclinicrotCheckBox.checkState == Qt.Unchecked)
+						onValueChanged: {
+							updateRotationMatrix()
+						}
+					}
+				}
+			}
+		}
+
+		// ---------- Full Control ----------
+
+		Rectangle {
+			anchors.fill: parent
+			color: Qt.lighter( mainScreen.color, 1.2 )
+
+			Grid {
+				id: gridLayout
+				columns: 3
+				spacing: mainScreen.gap
+				Repeater {
+					id: allDials
+					model: mainScreen._PLANES
+					Item {
+						width: side
+						height: side
+						property real side: Math.min( (controlLayout.width - mainScreen.gap*2)/3, (controlLayout.height - mainScreen.gap)/2 )
+						property real value: 0.0
+						Text {
+							x: 1
+							y: 1
+							width: parent.width/2
+							height: parent.height/10
+							color: "#6060B0"
+							font.bold: true
+							font.pixelSize: height
+							text: modelData
+							
+						}
+						FullDial {
+							anchors.fill: parent
+							color: "#203020"							
+							onValueChanged: {
+								parent.value = value
+								updateRotationMatrix()
+							}
+						}
+					}
+				}
+			}
+		}
+
+		Rectangle {
+			anchors.fill: parent
+			color: Qt.lighter( mainScreen.color, 1.2 )
+
+			property real side: Math.min( (controlLayout.width - mainScreen.gap)/2, controlLayout.height )
+
+			FullDial {
+				id: dialItemSpec
+				width: parent.side
+				height: parent.side
+				color: "#203020"
+				property real animatedValue: 0.0
+				property real animatedOffset: 0.0
+				onValueChanged: {
+					updateRotationMatrix()
+					animatedOffset = value - animatedValue
+				}
+				onAnimatedValueChanged: {
+					value = animatedValue + animatedOffset
+				}
+			}
+
+			StyledCheckBox {
+				id: specAnimateCheckBox
+				x: dialItemSpec.x + dialItemSpec.width + mainScreen.gap
+				y: mainScreen.gap
+				width: parent.w - mainScreen.gap
+				height: mainScreen.height * 0.1
+				text: qsTr("Animate")
+				checkState: Qt.Unchecked
+				onCheckStateChanged: {
+					updateRotationMatrix()
+				}
+			}
+		}
+
+		onCurrentIndexChanged: {
+			updateRotationMatrix()
+		}
+
+	} // end StackLayout
+
 	NumberAnimation {
-		id: animator
 		target: dialItem1
-		property: "anumatedValue"
+		property: "animatedValue"
 		duration: 10000
 		from: 0
 		to: 360
 		loops: Animation.Infinite
 		running: true
 		paused: animateCheckBox.checkState == Qt.Unchecked
+	}
+
+	NumberAnimation {
+		target: dialItemSpec
+		property: "animatedValue"
+		duration: 10000
+		from: 0
+		to: 360
+		loops: Animation.Infinite
+		running: true
+		paused: specAnimateCheckBox.checkState == Qt.Unchecked
+	}
+
+	/*------------------------------------------------------------------*+
+	|                                 MATH                               |
+	+*------------------------------------------------------------------*/
+
+	Rotate4DMat {
+		id: basicRotMat
+	}
+
+	Rotate4DMat {
+		id: allRotMat
+	}
+
+	Rotate4DMat {
+		id: specRotMat
+	}
+
+	Item {
+		id: specData
+
+		property variant inputVal:   [ 0.0,  90.0, 180.0, 270.0, 360.0 ]
+		property variant outputMap1: [ 0.0, -30.0, -60.0, -30.0,   0.0 ]
+		property variant outputMap2: [ 0.0,  60.0,   0.0,   0.0,   0.0 ]
+		property variant outputMap3: [ 0.0,   0.0,   0.0, -60.0,   0.0 ]
+
+		function getVal( value, outmap ) {
+			for ( var i=0; i<inputVal.length-1; ++i ) {
+				if ( (value >= inputVal[i]) && (value <= inputVal[i+1]) ) {
+					var a = (value - inputVal[i]) / (inputVal[i+1] - inputVal[i])
+					return a*outmap[i+1] + (1.0-a)*outmap[i]
+				}
+			}
+			return 0.0
+		}
+
+		function get1( value ) { return getVal( value, outputMap1 ) }
+		function get2( value ) { return getVal( value, outputMap2 ) }
+		function get3( value ) { return getVal( value, outputMap3 ) }
+	}
+
+	function getComplementerPlaneIndex( planeIndex ) {
+		var planeName = mainScreen._PLANES[planeIndex]
+		for ( var i=0; i<mainScreen._PLANES.length; ++i ) {
+			if (
+				(!mainScreen._PLANES[i].includes(planeName.charAt(0))) &&
+				(!mainScreen._PLANES[i].includes(planeName.charAt(1)))
+			) {
+				return i
+			}
+		}
+	}
+
+	function updateRotationMatrix() {
+
+		if (tabBar.currentIndex == 0) {
+
+			// --- BASIC CONTROL ---
+			var angles = [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ]
+			var planeIndex = planeSelectorCombo.currentIndex
+
+			if ( doublerotCheckBox.checkState==Qt.Unchecked ) {
+				// simple rotation
+				angles[ planeIndex ] = dialItem1.value
+			} else if ( isoclinicrotCheckBox.checkState==Qt.Unchecked ) {
+				// double rotation
+				angles[ planeIndex ] = dialItem1.value
+				angles[ getComplementerPlaneIndex(planeIndex) ] = dialItem2.value
+			} else {
+				// isoclinic rotation
+				angles[ planeIndex ] = dialItem1.value
+				angles[ getComplementerPlaneIndex(planeIndex) ] = dialItem1.value
+			}
+
+			basicRotMat.angles = angles
+			pentachoronEntity.rotationMatrix = basicRotMat.matR
+
+		}
+
+		if (tabBar.currentIndex == 1) {
+
+			// --- FULL CONTROL ---
+			allRotMat.angles = [
+				allDials.itemAt(0).value,
+				allDials.itemAt(1).value,
+				allDials.itemAt(2).value,
+				allDials.itemAt(3).value,
+				allDials.itemAt(4).value,
+				allDials.itemAt(5).value
+			]
+			pentachoronEntity.rotationMatrix = allRotMat.matR
+
+		}
+
+		if (tabBar.currentIndex == 2) {
+
+			// --- SPECIAL CONTROL ---
+			var value = (dialItemSpec.value + 360.0) % 360.0
+			specRotMat.angles = [ specData.get1(value), 0.0, specData.get2(value), 0.0, specData.get3(value), 0.0 ]
+			pentachoronEntity.rotationMatrix = specRotMat.matR
+
+		}
+
 	}
 
 	/*------------------------------------------------------------------*+

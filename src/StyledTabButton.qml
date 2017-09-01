@@ -24,42 +24,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import QtQuick 2.6
-import QtQuick.Controls 2.1
 
-CheckBox {
+import QtQuick 2.7
+import QtQuick.Controls 2.2
+
+TabButton {
 	id: control
-	text: qsTr("CheckBox")
-	checked: true
+	text: qsTr("Basic")
 
-	indicator: Rectangle {
-		implicitWidth: 26
-		implicitHeight: 26
-		x: control.leftPadding
-		y: parent.height / 2 - height / 2
-		radius: 3
-		border.color: control.down ? "#17a81a" : "#21be2b"
-		opacity: enabled ? 1.0 : 0.3
-
-		Rectangle {
-			width: 14
-			height: 14
-			x: 6
-			y: 6
-			radius: 2
-			color: control.down ? "#17a81a" : "#21be2b"
-			opacity: enabled ? 1.0 : 0.3
-			visible: control.checked
-		}
-	}
+	property color bgColor: "#808080"
+	property color textColor: "#FFFFFF"
 
 	contentItem: Text {
 		text: control.text
-		font: control.font
+		font.family: control.font.family
+		font.pixelSize: control.font.pixelSize
+		font.bold: true
 		opacity: enabled ? 1.0 : 0.3
-		color: control.down ? "#17a81a" : "#21be2b"
+		color: control.checked ? control.textColor : Qt.darker( control.textColor, 2.5 )
 		horizontalAlignment: Text.AlignHCenter
 		verticalAlignment: Text.AlignVCenter
-		leftPadding: control.indicator.width + control.spacing
+		elide: Text.ElideRight
+	}
+
+	background: Rectangle {
+		implicitWidth: 100
+		implicitHeight: 40
+		opacity: enabled ? 1 : 0.3
+		color: control.checked ? Qt.lighter( control.bgColor, 1.6 ) : Qt.lighter( control.bgColor, 1.2 )
+		border.color: control.checked ? Qt.lighter( control.bgColor, 2.0 ) : Qt.lighter( control.bgColor, 1.4 )
+		border.width: 1
+		radius: control.width/20
 	}
 }

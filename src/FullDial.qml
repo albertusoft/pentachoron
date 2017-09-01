@@ -38,13 +38,13 @@ Item {
 	property color textColor: Qt.lighter( color, 3.0 )
 	property string unitSign: "°"
 
-	property real borderSize: width * 0.02
-	property real middleSize: width * 0.4
+	property real borderSize: side * 0.02
+	property real middleSize: side * 0.4
 	property real handleSize: side * 0.1
 
 	property int actionCount: 0
 
-	property real side: (width < height) ? width : height
+	property real side: Math.min( width, height )
 
 	// the dial
 	Rectangle {
@@ -77,7 +77,7 @@ Item {
 	// handle
 	Rectangle {
 		x: control.width/2  + Math.cos( value * Math.PI/180 ) * (control.width*0.45 - handleSize) - control.handleSize/2
-		y: control.height/2 - Math.sin( value * Math.PI/180 ) * (control.width*0.45 - handleSize) - control.handleSize/2
+		y: control.height/2 - Math.sin( value * Math.PI/180 ) * (control.height*0.45 - handleSize) - control.handleSize/2
 		width: control.handleSize
 		height: control.handleSize
 		radius: side/2
