@@ -466,18 +466,11 @@ Rectangle {
 	|                                 MATH                               |
 	+*------------------------------------------------------------------*/
 
-	Rotate4DMat {
-		id: basicRotMat
-	}
+	Rotate4DMat { id: basicRotMat }
+	Rotate4DMat { id: allRotMat }
+	Rotate4DMat { id: specRotMat }
 
-	Rotate4DMat {
-		id: allRotMat
-	}
-
-	Rotate4DMat {
-		id: specRotMat
-	}
-
+	// define path of special rotations
 	Item {
 		id: specData
 
@@ -490,7 +483,10 @@ Rectangle {
 			for ( var i=0; i<inputVal.length-1; ++i ) {
 				if ( (value >= inputVal[i]) && (value <= inputVal[i+1]) ) {
 					var a = (value - inputVal[i]) / (inputVal[i+1] - inputVal[i])
-					return a*outmap[i+1] + (1.0-a)*outmap[i]
+					//var aa = a;
+					var aa = -Math.cos( a * Math.PI )/2 + 0.5
+					//var aa = 1.0 / ( 1.0 + Math.exp( -(a-0.5)*10 ) )
+					return aa*outmap[i+1] + (1.0-aa)*outmap[i]
 				}
 			}
 			return 0.0
@@ -501,19 +497,19 @@ Rectangle {
 		function get3( value ) { return getVal( value, outputMap3 ) }
 	}
 
-	function getComplementerPlaneIndex( planeIndex ) {
-		var planeName = mainScreen._PLANES[planeIndex]
-		for ( var i=0; i<mainScreen._PLANES.length; ++i ) {
-			if (
-				(!mainScreen._PLANES[i].includes(planeName.charAt(0))) &&
-				(!mainScreen._PLANES[i].includes(planeName.charAt(1)))
-			) {
-				return i
+	function updateRotationMatrix() {
+
+		function getComplementerPlaneIndex( planeIndex ) {
+			var planeName = mainScreen._PLANES[planeIndex]
+			for ( var i=0; i<mainScreen._PLANES.length; ++i ) {
+				if (
+					(!mainScreen._PLANES[i].includes(planeName.charAt(0))) &&
+					(!mainScreen._PLANES[i].includes(planeName.charAt(1)))
+				) {
+					return i
+				}
 			}
 		}
-	}
-
-	function updateRotationMatrix() {
 
 		if (tabBar.currentIndex == 0) {
 

@@ -1,4 +1,4 @@
-package com.cortexview.pentachoron;
+package com.albertusoft.pentachoron;
  
 import android.app.Activity;
 import android.content.Context;

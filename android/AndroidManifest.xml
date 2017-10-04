@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <manifest
-	package="com.cortexview.pentachoron"
+	package="com.albertusoft.pentachoron"
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:versionName="1.0.1"
-	android:versionCode="2"
+	android:versionName="1.0.4"
+	android:versionCode="5"
 	android:installLocation="auto"
 	>
 

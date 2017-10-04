@@ -1,0 +1,9 @@
+Pentachoron App TODO:
+ - descriptive help file
+ - animation speed and direction control
+ - zoom by two fingers
+ - rotation control by inertial sensors
+ - stereo view for VR-Headsets
+ - loading tesserect and oder 4D objects
+ - color schemes for object
+ - color schemes for GUI
