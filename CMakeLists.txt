@@ -19,8 +19,13 @@ include( ${PROJECT_SOURCE_DIR}/cmake/Android/QtAndroid.cmake ) # include just af
 
 if ( ANDROID )
 	set( PLATFORM_LIBS android log ${CMAKE_THREAD_LIBS_INIT} )
-else()
+elseif( LINUX )
 	set( PLATFORM_LIBS udev ${CMAKE_THREAD_LIBS_INIT} )
+elseif( WIN32 )
+	set( PLATFORM_LIBS ${CMAKE_THREAD_LIBS_INIT} )
+	SET( GUI_TYPE WIN32 )
+else()
+	set( PLATFORM_LIBS ${CMAKE_THREAD_LIBS_INIT} )
 endif()
 
 find_package( Threads REQUIRED )
@@ -90,7 +95,7 @@ set( APP_LIBRARIES
 
 # pentachoron application
 program_link_libraries_preset( pentachoron ${APP_LIBRARIES} )
-add_program( pentachoron ${pentachoron_SRCS} ${pentachoron_RESOURCES_CXX} )
+add_program( pentachoron ${GUI_TYPE} ${pentachoron_SRCS} ${pentachoron_RESOURCES_CXX} )
 program_link_libraries( pentachoron )
 
 # other targets to achive android build stages

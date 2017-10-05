@@ -57,7 +57,11 @@ int main( int argc, char *argv[] )
 #else
 	QScreen *screen = QGuiApplication::primaryScreen();
 	QSize screenSize = screen->virtualSize();
-	QSize winSize(540/*600*/,960);
+#ifdef WIN32
+    QSize winSize(450,800);
+#else
+    QSize winSize(540,960);
+#endif
 	view.setWidth( winSize.width() );
 	view.setHeight( winSize.height() );
 	view.setX( (screenSize.width() - winSize.width()) / 2 );
