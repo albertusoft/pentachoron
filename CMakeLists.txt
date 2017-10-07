@@ -80,6 +80,7 @@ endfunction()
 find_sources( pentachoron_SRCS "src/*.cpp" )
 find_sources( pentachoron_SRCS "src/*.qml" )
 set( pentachoron_RESOURCES src/pentachoron.qrc )
+set( pentachoron_RC_FILE src/pentachoron.rc )
 android_custom_sources( pentachoron "${CMAKE_CURRENT_SOURCE_DIR}/android" )
 qt5_add_resources( pentachoron_RESOURCES_CXX ${pentachoron_RESOURCES} )
 
@@ -92,6 +93,10 @@ set( APP_LIBRARIES
 	${PLATFORM_LIBS}
 	Qt5::Gui Qt5::Quick Qt5::QuickWidgets Qt5::QuickControls2 Qt5::Multimedia Qt5::3DQuick Qt5::3DQuickExtras Qt5::3DQuickRender Qt5::3DQuickInput Qt5::3DQuickAnimation Qt5::Network Qt5::Sensors Qt5::Test Qt5::Svg
 )
+
+if(WIN32)
+	add_rc_file( pentachoron )
+endif(WIN32)
 
 # pentachoron application
 program_link_libraries_preset( pentachoron ${APP_LIBRARIES} )

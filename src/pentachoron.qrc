@@ -1,4 +1,8 @@
 <RCC>
+    <qresource prefix="ICONS">
+	<file>../resources/icons/pentachoron.ico</file>
+	<file>../resources/icons/pentachoron.png</file>
+    </qresource>
     <qresource prefix="/">
         <file>pentachoron_main.qml</file>
 	<file>MainScreen.qml</file>
