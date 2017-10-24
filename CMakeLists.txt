@@ -106,7 +106,7 @@ program_link_libraries( pentachoron )
 # other targets to achive android build stages
 set( ANDROID_BUILD_DIR ${CMAKE_SOURCE_DIR}/build/android-release )
 
-# TODO HERE: create useabel targets
+# TODO HERE: create target shortcuts
 add_custom_target( App_BuildAndroidBinary COMMAND ${CMAKE_MAKE_PROGRAM} -C ${ANDROID_BUILD_DIR} WORKING_DIRECTORY ${ANDROID_BUILD_DIR} )
 add_custom_target( App_BuildAndroidClean COMMAND ${CMAKE_MAKE_PROGRAM} -C ${ANDROID_BUILD_DIR} clean )
 add_custom_target( App_PentachoronBuildAPK COMMAND ${CMAKE_MAKE_PROGRAM} -C ${ANDROID_BUILD_DIR} pentachoron_build_apk )

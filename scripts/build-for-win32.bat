@@ -17,6 +17,8 @@ for /f "usebackq delims=" %%I in (`powershell "\"%VENDOR_TLD%\".toLower()"`) do 
 for /f "usebackq delims=" %%I in (`powershell "\"%VENDOR_NAME%\".toLower()"`) do set "VENDOR_NAME_L=%%~I"
 for /f "usebackq delims=" %%I in (`powershell "\"%PRODUCT_NAME%\".toLower()"`) do set "PRODUCT_NAME_L=%%~I"
 
+set PRODUCT_DESCRIPTION=%PRODUCT_DESCRIPTION:"=%
+
 set WIN32_EXE_NAME=%PRODUCT_NAME_L%.exe
 set WIN32_PACKAGE_DIR=%BUILD_DIR%\PACKAGE\packages\%VENDOR_TLD_L%.%VENDOR_NAME_L%.%PRODUCT_NAME_L%
 
@@ -56,6 +58,7 @@ echo *** CREATING INFO FILES ***
 echo * copy license files for installer...
 copy %PROJECT_DIR%\resources\doc\BSD2.txt %WIN32_PACKAGE_DIR%\meta\BSD2.txt
 
+:create_configfile
 echo * create config.xml ...
 (
 echo ^<?xml version="1.0" encoding="UTF-8"?^>
@@ -65,7 +68,7 @@ echo     ^<Version^>1.0.0^</Version^>
 echo     ^<Title^>%PRODUCT_NAME% Installer^</Title^>
 echo     ^<Publisher^>%VENDOR_NAME%</Publisher^>
 echo     ^<StartMenuDir^>%PRODUCT_NAME%^</StartMenuDir^>
-echo     ^<TargetDir^>@HomeDir@/%PRODUCT_NAME%^</TargetDir^>
+echo     ^<TargetDir^>@ApplicationsDirX86@/%PRODUCT_NAME%^</TargetDir^>
 echo ^</Installer^>
 ) > %BUILD_DIR%\PACKAGE\config\config.xml
 
@@ -82,8 +85,30 @@ echo     ^<Licenses^>
 echo         ^<License name="2-clause BSD License" file="BSD2.txt" /^>
 echo     ^</Licenses^>
 echo     ^<Default^>true^</Default^>
+echo     ^<Script^>installscript.qs^</Script^>
 echo ^</Package^>
 ) > %WIN32_PACKAGE_DIR%\meta\package.xml
+
+:create_installerscripts
+echo * create installscript.qs ...
+set "OUTF=%WIN32_PACKAGE_DIR%\meta\installscript.qs"
+echo. >%OUTF%
+echo function Component() { } >>%OUTF%
+echo. >>%OUTF%
+echo Component.prototype.createOperations = function() { >>%OUTF%
+echo   try { >>%OUTF%
+echo     component.createOperations(); >>%OUTF%
+echo     if (installer.value("os") === "win") { >>%OUTF%
+echo       try { >>%OUTF%
+echo         component.addOperation( "CreateShortcut", "@TargetDir@/%PRODUCT_NAME%.exe", "@StartMenuDir@/pentachoron.lnk", "workingDirectory=@TargetDir@",  "description=%PRODUCT_DESCRIPTION%" ); >>%OUTF%
+echo         component.addOperation( "CreateShortcut", "@TargetDir@/%PRODUCT_NAME%.exe", "@DesktopDir@/pentachoron.lnk", "workingDirectory=@TargetDir@",  "description=%PRODUCT_DESCRIPTION%" ); >>%OUTF%
+echo       } catch (e) { >>%OUTF%
+echo       } >>%OUTF%
+echo     } >>%OUTF%
+echo   } catch (e) { >>%OUTF%
+echo     print(e); >>%OUTF%
+echo   } >>%OUTF%
+echo } >>%OUTF%
 
 :build_installer
 echo *** BUILDING THE INSTALLER ***
