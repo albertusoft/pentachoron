@@ -22,7 +22,7 @@ echo "Configuring project for android build..."
 echo "ANDROID_NDK_ROOT=${ANDROID_NDK_ROOT}"
 echo "ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}"
 echo "ANDROID_QT_ROOT=${ANDROID_QT_ROOT}"
-echo "JAVA_HOME=${JAVA_HOME}"
+echo "ANDROID_JAVA_HOME=${ANDROID_JAVA_HOME}"
 
 echo "_________________________________________________________________________"
 
@@ -38,10 +38,10 @@ cmake ${PROJECT_DIR} \
 	-DCMAKE_PREFIX_PATH="${ANDROID_QT_ROOT}" \
 	-DCMAKE_TOOLCHAIN_FILE="${PROJECT_DIR}/cmake/Android/AndroidToolchain.cmake" \
 	-DLIBRARY_OUTPUT_PATH_ROOT="${BUILD_DIR}/LIBS" \
-	-DJAVA_HOME="${JAVA_HOME}" \
+	-DJAVA_HOME="${ANDROID_JAVA_HOME}" \
 	-DANDROID_NDK="${ANDROID_NDK_ROOT}" \
 	-DANDROID_SDK="${ANDROID_SDK_ROOT}" \
-	-DANDROID_STANDALONE_TOOLCHAIN="${ARM_TOOLCHAIN}" \
+	-DANDROID_STANDALONE_TOOLCHAIN="${ANDROID_ARM_TOOLCHAIN}" \
 	-DANDROID_NATIVE_API_LEVEL="${ANDROID_API_LEVEL}" \
 	-DANDROID_ABI="armeabi-v7a" \
 	-DANDROID_STL="gnustl_shared" \

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+	<Name>@APP_NAME@</Name>
+	<Version>@APP_VERSION@</Version>
+	<Title>@APP_NAME@ Installer</Title>
+	<Publisher>@APP_VENDOR@</Publisher>
+	<StartMenuDir>@APP_NAME@</StartMenuDir>
+	<TargetDir>@APP_TARGETDIR@</TargetDir>
+</Installer>

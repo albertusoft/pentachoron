@@ -7,6 +7,10 @@ set( CMAKE_AUTOMOC ON )
 
 include(CMacros.cmake)
 
+# load settings into variables
+load_settingsfile( "${CMAKE_CURRENT_SOURCE_DIR}/app.conf" )
+load_settingsfile( "${CMAKE_CURRENT_SOURCE_DIR}/scripts/local.conf" )
+
 
 #############################################################################
 #                         Packages / Libraries                              #
@@ -19,11 +23,13 @@ include( ${PROJECT_SOURCE_DIR}/cmake/Android/QtAndroid.cmake ) # include just af
 
 if ( ANDROID )
 	set( PLATFORM_LIBS android log ${CMAKE_THREAD_LIBS_INIT} )
-elseif( LINUX )
+elseif( UNIX AND NOT APPLE )
 	set( PLATFORM_LIBS udev ${CMAKE_THREAD_LIBS_INIT} )
 elseif( WIN32 )
 	set( PLATFORM_LIBS ${CMAKE_THREAD_LIBS_INIT} )
 	SET( GUI_TYPE WIN32 )
+elseif( APPLE )
+	set( PLATFORM_LIBS ${CMAKE_THREAD_LIBS_INIT} )
 else()
 	set( PLATFORM_LIBS ${CMAKE_THREAD_LIBS_INIT} )
 endif()
@@ -66,16 +72,6 @@ set( Qt5_LIB_INCLUDE_DIRS
 #                                SOURCES                                    #
 #############################################################################
 
-function( find_sources _var_name _source_dir_and_filter )
-	if ( "${ARGN}" STREQUAL "NONRECURSIVE" )
-		set( _globbig GLOB )
-	else()
-		set( _globbig GLOB_RECURSE )
-	endif()
-	file( ${_globbig} _collected_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/${_source_dir_and_filter}" )
-	set( ${_var_name} ${_collected_files} ${${_var_name}} PARENT_SCOPE )
-endfunction()
-
 # pentachoron application
 find_sources( pentachoron_SRCS "src/*.cpp" )
 find_sources( pentachoron_SRCS "src/*.qml" )
@@ -112,3 +108,4 @@ add_custom_target( App_BuildAndroidClean COMMAND ${CMAKE_MAKE_PROGRAM} -C ${ANDR
 add_custom_target( App_PentachoronBuildAPK COMMAND ${CMAKE_MAKE_PROGRAM} -C ${ANDROID_BUILD_DIR} pentachoron_build_apk )
 add_custom_target( App_PentachoronInstallAPK COMMAND ant installd WORKING_DIRECTORY ${ANDROID_BUILD_DIR}/APP/pentachoron )
 
+generate_installer_target( pentachoron )

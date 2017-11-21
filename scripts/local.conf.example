@@ -1,28 +1,31 @@
 # Linux Build
-LINUX_QT_ROOT=/opt/Qt-5.9/5.9/gcc_64
+LINUX_QT_ROOT=/opt/Qt-5.9.1/5.9.1/gcc_64
 LINUX_BUILD_PATH=build/linux-debug
 LINUX_BUILD_TYPE=RelWidthDebInfo
+LINUX_QT_INSTALLER_PATH=/opt/Qt-5.9.1/Tools/QtInstallerFramework/3.0
 
 # Android Build
 ANDROID_NDK_ROOT=/opt/android/ndk
 ANDROID_SDK_ROOT=/opt/android/sdk
 ANDROID_API_LEVEL="android-25"
-ARM_TOOLCHAIN=/opt/android/standalone/arm-linux-androideabi-4.9
-ANDROID_QT_ROOT=/opt/Qt-5.9/5.9/android_armv7
+ANDROID_ARM_TOOLCHAIN=/opt/android/standalone/arm-linux-androideabi-4.9
+ANDROID_QT_ROOT=/opt/Qt-5.9.1/5.9.1/android_armv7
 ANDROID_BUILD_PATH=build/android-release
 ANDROID_BUILD_TYPE=Release
-ANDROID_DEPLOY_QT_KEYSTOREPATH="/data/work/doc/PRIVATE/keys/mbi-android-dev.jks"
+ANDROID_DEPLOY_QT_KEYSTOREPATH="/path/to/keyfile.jks"
 ANDROID_DEPLOY_QT_CERTIFICATEALIAS="apk-release"
 ANDROID_DEPLOY_QT_STOREPASS="*****"
 ANDROID_DEPLOY_QT_KEYPASS="*****"
-JAVA_HOME=/opt/jdk1.8.0_131
+ANDROID_JAVA_HOME=/opt/jdk1.8.0_131
 
 # Win32
-VENDOR_TLD=Com
-VENDOR_NAME=Albertusoft
-PRODUCT_NAME=Pentachoron
-PRODUCT_DESCRIPTION="a four dimensional rotation visualizer"
 WIN32_QT_ROOT=c:\Qt\5.9.1\mingw53_32
 WIN32_QT_INSTALLER_PATH=c:\Qt\Tools\QtInstallerFramework\3.0
 WIN32_BUILD_PATH=build\win32-release
 WIN32_MINGW_PATH=c:\Qt\Tools\mingw530_32
+
+# MacOS
+MACOS_QT_ROOT=/users/user/Apps/Qt/5.9.2/clang_64
+MACOS_BUILD_PATH=build/macos-release
+MACOS_BULD_TYPE=Release
+MACOS_QT_INSTALLER_PATH=/users/user/Apps/Qt/Tools/QtInstallerFramework/3.0
