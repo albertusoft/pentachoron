@@ -58,6 +58,16 @@ macro( load_settingsfile _SettingsFileName )
 	endforeach()
 endmacro()
 
+function( get_target_location_property _variableName _target_NAME )
+	cmake_policy(PUSH)
+	if ( ${CMAKE_MAJOR_VERSION} EQUAL "3" )
+		cmake_policy( SET CMP0026 OLD )
+	endif()
+	get_target_property( _var ${_target_NAME} LOCATION )
+	set( ${_variableName} ${_var} PARENT_SCOPE )
+	cmake_policy(POP)
+endfunction()
+
 function( prepare_installer )
 
 	message( STATUS "prepare installer" )
@@ -99,7 +109,7 @@ endfunction()
 
 function( generate_installer_target _Target )
 
-	get_property( _ExePath TARGET ${_Target} PROPERTY LOCATION )
+	get_target_location_property( _ExePath ${_Target} )
 	get_filename_component( _ExeName ${_ExePath} NAME )
 
 	set( APP_PACKAGE_DIR "${CMAKE_CURRENT_BINARY_DIR}/PACKAGE" )
