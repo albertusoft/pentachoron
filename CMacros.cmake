@@ -59,13 +59,15 @@ macro( load_settingsfile _SettingsFileName )
 endmacro()
 
 function( get_target_location_property _variableName _target_NAME )
-	cmake_policy(PUSH)
-	if ( ${CMAKE_MAJOR_VERSION} EQUAL "3" )
-		cmake_policy( SET CMP0026 OLD )
+	if ( ${CMAKE_MAJOR_VERSION} EQUAL "2" )
+		#cmake_policy(PUSH)
+		#cmake_policy( SET CMP0026 OLD )
+		get_target_property( _var ${_target_NAME} LOCATION )
+		set( ${_variableName} ${_var} PARENT_SCOPE )
+		#cmake_policy(POP)
+	else()
+		set( ${_variableName} $<TARET_FILE:${_target_NAME}> PARENT_SCOPE )
 	endif()
-	get_target_property( _var ${_target_NAME} LOCATION )
-	set( ${_variableName} ${_var} PARENT_SCOPE )
-	cmake_policy(POP)
 endfunction()
 
 function( prepare_installer )
@@ -117,37 +119,43 @@ function( add_installer_target _InsallerTarget _AppTarget )
 	set( APP_DEPLOYMENT_DIR "${CMAKE_CURRENT_BINARY_DIR}/DEPLOYMENT" )
 
 	# deploy files
-	if( UNIX AND NOT APPLE )
-		set ( PROG_DEPLOYQT "${LINUX_QT_INSTALLER_PATH}/bin/linuxdeployqt" )
-		set ( PROG_DEPLOYQT_ARGS "${APP_DEPLOYMENT_DIR}/${_ExeName}" -qmldir="${CMAKE_CURRENT_SOURCE_DIR}/src" -appimage )
-		set ( PROG_ARCHIVEGEN "${LINUX_QT_INSTALLER_PATH}/bin/archivegen" )
-		set ( PROG_BINARYCREATOR "${LINUX_QT_INSTALLER_PATH}/bin/binarycreator" )
-		set ( APP_INSTALLER_NAME "${APP_NAME}-installer.bin" )
-	elseif( WIN32 )
-		set ( PROG_DEPLOYQT "${WIN32_QT_ROOT}/bin/windeployqt.exe" )
-		set ( PROG_DEPLOYQT_ARGS --release --qmldir "${CMAKE_CURRENT_SOURCE_DIR}/src" "${APP_DEPLOYMENT_DIR}/${_ExeName}" )
-		set ( PROG_ARCHIVEGEN "${WIN32_QT_INSTALLER_PATH}/bin/archivegen.exe" )
-		set ( PROG_BINARYCREATOR "${WIN32_QT_INSTALLER_PATH}/bin/binarycreator.exe" )
-		set ( APP_INSTALLER_NAME "${APP_NAME}-installer.exe" )
-	elseif( APPLE )
-		set ( PROG_DEPLOYQT "${MACOS_QT_ROOT}/bin/macdeployqt" )
-		set ( PROG_DEPLOYQT_ARGS "${APP_DEPLOYMENT_DIR}/${_ExeName}" -qmldir="${CMAKE_CURRENT_SOURCE_DIR}/src" -dmg )
-		set ( PROG_ARCHIVEGEN "archivegen" )
-		set ( PROG_BINARYCREATOR "binarycreator" )
-		set ( APP_INSTALLER_NAME "${APP_NAME}-installer.dmg" )
-	endif()
-
-	if ( APP_INSTALLER_NAME )
-		message( STATUS "Creating installer generator target for: ${_ExePath}" )
+	if( UNIX AND NOT APPLE )		
+		message( STATUS "Creating Linux installer generator target for: ${_ExePath}" )
 		prepare_installer()
 		add_custom_target( ${_InsallerTarget}
 			COMMAND ${CMAKE_COMMAND} -E copy ${_ExePath} "${APP_DEPLOYMENT_DIR}"
-			COMMAND ${PROG_DEPLOYQT} ${PROG_DEPLOYQT_ARGS}
-			COMMAND ${PROG_ARCHIVEGEN} "${APP_PACKAGE_COMPONENT_DIR}/data/main.7z" "${APP_DEPLOYMENT_DIR}/*"
-			COMMAND ${PROG_BINARYCREATOR}
+			COMMAND "${LINUX_QT_INSTALLER_PATH}/bin/linuxdeployqt" "${APP_DEPLOYMENT_DIR}/${_ExeName}" -qmldir="${CMAKE_CURRENT_SOURCE_DIR}/src" -appimage
+			COMMAND "${LINUX_QT_INSTALLER_PATH}/bin/archivegen" "${APP_PACKAGE_COMPONENT_DIR}/data/main.7z" "${APP_DEPLOYMENT_DIR}/*"
+			COMMAND "${LINUX_QT_INSTALLER_PATH}/bin/binarycreator"
 				-c "${APP_PACKAGE_DIR}/config/config.xml"
 				-p "${APP_PACKAGE_DIR}/packages"
-				"${CMAKE_CURRENT_BINARY_DIR}/INSTALLER/${APP_INSTALLER_NAME}"
+				"${CMAKE_CURRENT_BINARY_DIR}/INSTALLER/${APP_NAME}-installer.bin"
+		)
+	elseif( WIN32 )
+		message( STATUS "Creating Win32 installer generator target for: ${_ExePath}" )
+		prepare_installer()
+		add_custom_target( ${_InsallerTarget}
+			COMMAND ${CMAKE_COMMAND} -E copy ${_ExePath} "${APP_DEPLOYMENT_DIR}"
+			COMMAND "${WIN32_QT_ROOT}/bin/windeployqt.exe" --release --qmldir "${CMAKE_CURRENT_SOURCE_DIR}/src" "${APP_DEPLOYMENT_DIR}/${_ExeName}"
+			COMMAND "${WIN32_QT_INSTALLER_PATH}/bin/archivegen.exe" "${APP_PACKAGE_COMPONENT_DIR}/data/main.7z" "${APP_DEPLOYMENT_DIR}/*"
+			COMMAND "${WIN32_QT_INSTALLER_PATH}/bin/binarycreator.exe"
+				-c "${APP_PACKAGE_DIR}/config/config.xml"
+				-p "${APP_PACKAGE_DIR}/packages"
+				"${CMAKE_CURRENT_BINARY_DIR}/INSTALLER/${APP_NAME}-installer.exe"
+		)
+	elseif( APPLE )
+		message( STATUS "Creating MacOS installer generator target for: ${_ExePath}" )
+		set_target_properties( ${_AppTarget} PROPERTIES MACOSX_BUNDLE TRUE )
+		get_target_property( _ExeBundleName ${_AppTarget} MACOSX_BUNDLE_BUNDLE_NAME )
+		set( APP_BUNDLE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${_ExeBundleName}" )
+		message( STATUS "APP_BUNDLE_PATH=${APP_BUNDLE_PATH}" )
+		configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/${_AppTarget}.icns ${APP_BUNDLE_PATH}/Contents/Resources COPYONLY )
+		set_target_properties( ${_AppTarget} MACOSX_BUNDLE_ICON_FILE "${_AppTarget}.icns" )
+		prepare_installer()
+		add_custom_target( ${_InsallerTarget}
+			COMMAND "${MACOS_QT_ROOT}/bin/macdeployqt" "${APP_BUNDLE_PATH}" -qmldir="${CMAKE_CURRENT_SOURCE_DIR}/src" -dmg
+			#COMMAND "${MACOS_QT_INSTALLER_PATH}/bin/archivegen" "${APP_PACKAGE_COMPONENT_DIR}/data/main.7z" "${APP_DEPLOYMENT_DIR}/*"
+			#COMMAND "${MACOS_QT_INSTALLER_PATH}/bin/binarycreator" -c "${APP_PACKAGE_DIR}/config/config.xml" -p "${APP_PACKAGE_DIR}/packages" "${CMAKE_CURRENT_BINARY_DIR}/INSTALLER/${APP_NAME}-installer"
 		)
 	endif()
 

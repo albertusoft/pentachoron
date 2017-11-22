@@ -99,10 +99,6 @@ program_link_libraries_preset( pentachoron ${APP_LIBRARIES} )
 add_program( pentachoron ${GUI_TYPE} ${pentachoron_SRCS} ${pentachoron_RESOURCES_CXX} )
 program_link_libraries( pentachoron )
 
-if( APPLE )
-	set_target_properties( pentachoron PROPERTIES MACOSX_BUNDLE TRUE )
-endif()
-
 # other targets to achive android build stages
 set( ANDROID_BUILD_DIR ${CMAKE_SOURCE_DIR}/build/android-release )
 
