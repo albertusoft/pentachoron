@@ -107,9 +107,9 @@ function( prepare_installer )
 endfunction()
 
 
-function( generate_installer_target _Target )
+function( add_installer_target _InsallerTarget _AppTarget )
 
-	get_target_location_property( _ExePath ${_Target} )
+	get_target_location_property( _ExePath ${_AppTarget} )
 	get_filename_component( _ExeName ${_ExePath} NAME )
 
 	set( APP_PACKAGE_DIR "${CMAKE_CURRENT_BINARY_DIR}/PACKAGE" )
@@ -140,7 +140,7 @@ function( generate_installer_target _Target )
 	if ( APP_INSTALLER_NAME )
 		message( STATUS "Creating installer generator target for: ${_ExePath}" )
 		prepare_installer()
-		add_custom_target( App_${_Target}_GenInstaller
+		add_custom_target( ${_InsallerTarget}
 			COMMAND ${CMAKE_COMMAND} -E copy ${_ExePath} "${APP_DEPLOYMENT_DIR}"
 			COMMAND ${PROG_DEPLOYQT} ${PROG_DEPLOYQT_ARGS}
 			COMMAND ${PROG_ARCHIVEGEN} "${APP_PACKAGE_COMPONENT_DIR}/data/main.7z" "${APP_DEPLOYMENT_DIR}/*"

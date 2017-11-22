@@ -99,13 +99,18 @@ program_link_libraries_preset( pentachoron ${APP_LIBRARIES} )
 add_program( pentachoron ${GUI_TYPE} ${pentachoron_SRCS} ${pentachoron_RESOURCES_CXX} )
 program_link_libraries( pentachoron )
 
+if( APPLE )
+	set_target_properties( pentachoron PROPERTIES MACOSX_BUNDLE TRUE )
+endif()
+
 # other targets to achive android build stages
 set( ANDROID_BUILD_DIR ${CMAKE_SOURCE_DIR}/build/android-release )
+
+# installer
+add_installer_target( installer pentachoron )
 
 # TODO HERE: create target shortcuts
 add_custom_target( App_BuildAndroidBinary COMMAND ${CMAKE_MAKE_PROGRAM} -C ${ANDROID_BUILD_DIR} WORKING_DIRECTORY ${ANDROID_BUILD_DIR} )
 add_custom_target( App_BuildAndroidClean COMMAND ${CMAKE_MAKE_PROGRAM} -C ${ANDROID_BUILD_DIR} clean )
 add_custom_target( App_PentachoronBuildAPK COMMAND ${CMAKE_MAKE_PROGRAM} -C ${ANDROID_BUILD_DIR} pentachoron_build_apk )
 add_custom_target( App_PentachoronInstallAPK COMMAND ant installd WORKING_DIRECTORY ${ANDROID_BUILD_DIR}/APP/pentachoron )
-
-generate_installer_target( pentachoron )
