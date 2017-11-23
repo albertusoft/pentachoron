@@ -27,9 +27,10 @@ elseif( UNIX AND NOT APPLE )
 	set( PLATFORM_LIBS udev ${CMAKE_THREAD_LIBS_INIT} )
 elseif( WIN32 )
 	set( PLATFORM_LIBS ${CMAKE_THREAD_LIBS_INIT} )
-	SET( GUI_TYPE WIN32 )
+	set( GUI_TYPE WIN32 )
 elseif( APPLE )
 	set( PLATFORM_LIBS ${CMAKE_THREAD_LIBS_INIT} )
+	set( GUI_TYPE MACOSX_BUNDLE )
 else()
 	set( PLATFORM_LIBS ${CMAKE_THREAD_LIBS_INIT} )
 endif()
@@ -90,9 +91,12 @@ set( APP_LIBRARIES
 	Qt5::Gui Qt5::Quick Qt5::QuickWidgets Qt5::QuickControls2 Qt5::Multimedia Qt5::3DQuick Qt5::3DQuickExtras Qt5::3DQuickRender Qt5::3DQuickInput Qt5::3DQuickAnimation Qt5::Network Qt5::Sensors Qt5::Test Qt5::Svg
 )
 
+# Icons
 if(WIN32)
 	add_rc_file( pentachoron )
-endif(WIN32)
+elseif( APPLE )
+	add_macosx_icon_file( pentachoron "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/pentachoron.icns" )
+endif()
 
 # pentachoron application
 program_link_libraries_preset( pentachoron ${APP_LIBRARIES} )

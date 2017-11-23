@@ -34,6 +34,12 @@ macro( add_rc_file __basename )
 endmacro()
 
 
+macro( add_macosx_icon_file _AppTarget _IconFile )
+	set( ${_AppTarget}_MACOS_icon "${_IconFile}" )
+	set_source_files_properties( ${${_AppTarget}_MACOS_icon} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources" )
+	set( ${_AppTarget}_SRCS ${${_AppTarget}_SRCS} ${${_AppTarget}_MACOS_icon} )
+endmacro()
+
 macro( wrap_source_files __basename )
 	
 	# --- qt wrapper ---
@@ -66,7 +72,7 @@ function( get_target_location_property _variableName _target_NAME )
 		set( ${_variableName} ${_var} PARENT_SCOPE )
 		#cmake_policy(POP)
 	else()
-		set( ${_variableName} $<TARET_FILE:${_target_NAME}> PARENT_SCOPE )
+		set( ${_variableName} $<TARGET_FILE:${_target_NAME}> PARENT_SCOPE )
 	endif()
 endfunction()
 
@@ -145,17 +151,11 @@ function( add_installer_target _InsallerTarget _AppTarget )
 		)
 	elseif( APPLE )
 		message( STATUS "Creating MacOS installer generator target for: ${_ExePath}" )
-		set_target_properties( ${_AppTarget} PROPERTIES MACOSX_BUNDLE TRUE )
-		get_target_property( _ExeBundleName ${_AppTarget} MACOSX_BUNDLE_BUNDLE_NAME )
-		set( APP_BUNDLE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${_ExeBundleName}" )
+		set( APP_BUNDLE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${_AppTarget}.app" )
 		message( STATUS "APP_BUNDLE_PATH=${APP_BUNDLE_PATH}" )
-		configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/${_AppTarget}.icns ${APP_BUNDLE_PATH}/Contents/Resources COPYONLY )
-		set_target_properties( ${_AppTarget} MACOSX_BUNDLE_ICON_FILE "${_AppTarget}.icns" )
-		prepare_installer()
+		set_target_properties( ${_AppTarget} PROPERTIES MACOSX_BUNDLE_ICON_FILE "${_AppTarget}.icns" )
 		add_custom_target( ${_InsallerTarget}
 			COMMAND "${MACOS_QT_ROOT}/bin/macdeployqt" "${APP_BUNDLE_PATH}" -qmldir="${CMAKE_CURRENT_SOURCE_DIR}/src" -dmg
-			#COMMAND "${MACOS_QT_INSTALLER_PATH}/bin/archivegen" "${APP_PACKAGE_COMPONENT_DIR}/data/main.7z" "${APP_DEPLOYMENT_DIR}/*"
-			#COMMAND "${MACOS_QT_INSTALLER_PATH}/bin/binarycreator" -c "${APP_PACKAGE_DIR}/config/config.xml" -p "${APP_PACKAGE_DIR}/packages" "${CMAKE_CURRENT_BINARY_DIR}/INSTALLER/${APP_NAME}-installer"
 		)
 	endif()
 
