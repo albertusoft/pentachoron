@@ -6,6 +6,10 @@
 
 find_package(Git)
 
+if( UNIX AND NOT APPLE )
+	set( LINUX TRUE )
+endif()
+
 
 function( find_sources _var_name _source_dir_and_filter )
 	if ( "${ARGN}" STREQUAL "NONRECURSIVE" )

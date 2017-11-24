@@ -27,5 +27,8 @@ WIN32_MINGW_PATH=c:\Qt\Tools\mingw530_32
 # MacOS
 MACOS_QT_ROOT=/users/user/Apps/Qt/5.9.2/clang_64
 MACOS_BUILD_PATH=build/macos-release
-MACOS_BULD_TYPE=Release
 MACOS_QT_INSTALLER_PATH=/users/user/Apps/Qt/Tools/QtInstallerFramework/3.0
+
+# iOS
+IOS_QT_ROOT=/users/user/Apps/Qt/5.9.2/ios
+IOS_BUILD_PATH=build/ios-release

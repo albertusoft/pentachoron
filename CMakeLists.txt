@@ -23,7 +23,10 @@ include( ${PROJECT_SOURCE_DIR}/cmake/Android/QtAndroid.cmake ) # include just af
 
 if ( ANDROID )
 	set( PLATFORM_LIBS android log ${CMAKE_THREAD_LIBS_INIT} )
-elseif( UNIX AND NOT APPLE )
+elseif( IOS )
+	set( PLATFORM_LIBS ${CMAKE_THREAD_LIBS_INIT} )
+	set( GUI_TYPE MACOSX_BUNDLE )
+elseif( LINUX )
 	set( PLATFORM_LIBS udev ${CMAKE_THREAD_LIBS_INIT} )
 elseif( WIN32 )
 	set( PLATFORM_LIBS ${CMAKE_THREAD_LIBS_INIT} )
