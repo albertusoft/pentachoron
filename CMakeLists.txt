@@ -9,7 +9,7 @@ include(CMacros.cmake)
 
 # load settings into variables
 load_settingsfile( "${CMAKE_CURRENT_SOURCE_DIR}/app.conf" )
-load_settingsfile( "${CMAKE_CURRENT_SOURCE_DIR}/scripts/local.conf" )
+load_settingsfile( "${CMAKE_CURRENT_SOURCE_DIR}/local.conf" )
 
 
 #############################################################################

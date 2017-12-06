@@ -4,10 +4,9 @@
 cd `dirname $0`
 PWD0=`pwd`
 cd ..
-
-source $PWD0/local.conf
-
 PROJECT_DIR=`pwd`
+source ${PROJECT_DIR}/local.conf
+
 BUILD_DIR="${PROJECT_DIR}/${IOS_BUILD_PATH}"
 
 echo

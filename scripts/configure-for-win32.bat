@@ -2,8 +2,8 @@
 setlocal EnableExtensions DisableDelayedExpansion
 
 cd %~dp0
-for /f "eol=# delims=" %%x in (local.conf) do (set "%%x")
 cd ..
+for /f "eol=# delims=" %%x in (local.conf) do (set "%%x")
 
 set PATH=%WIN32_QT_ROOT%\bin;%WIN32_MINGW_PATH%\bin;%PATH%
 

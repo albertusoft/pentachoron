@@ -40,6 +40,6 @@ CMakeLists.txt.user*
 # ...
 /.kdev4
 *.kdev4
-/scripts/local.conf
+/local.conf
 /build
 

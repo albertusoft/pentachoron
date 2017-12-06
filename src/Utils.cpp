@@ -25,7 +25,7 @@
  */
 
 #include "Utils.h"
-
+#include <QDebug>
 
 // created instance will be destroyed by QML engine,
 // if QML engine is not used then destry it manually at end of use

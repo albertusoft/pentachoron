@@ -2,8 +2,8 @@
 setlocal EnableExtensions DisableDelayedExpansion
 
 cd %~dp0
-for /f "eol=# delims=" %%x in (local.conf) do (set "%%x")
 cd ..
+for /f "eol=# delims=" %%x in (local.conf) do (set "%%x")
 
 echo *** SET VARIABLES ***
 

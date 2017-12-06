@@ -10,6 +10,15 @@ if( UNIX AND NOT APPLE )
 	set( LINUX TRUE )
 endif()
 
+if ( APPLE AND NOT IOS )
+	set( MACOS TRUE )
+endif()
+
+if ( LINUX OR WIN32 OR MACOS )
+	set( DESKTOP_OS TRUE )
+else()
+	set( MOBILE_OS TRUE )
+endif()
 
 function( find_sources _var_name _source_dir_and_filter )
 	if ( "${ARGN}" STREQUAL "NONRECURSIVE" )
