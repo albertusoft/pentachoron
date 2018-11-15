@@ -49,13 +49,12 @@ endif()
 ## these lines should go to Qt5CoreConfigExtras.cmake next to moc, rcc, etc.
 
 function( get_target_fullpath _variableName _target_NAME )
-	cmake_policy(PUSH)
-	if ( ${CMAKE_MAJOR_VERSION} EQUAL "3" )
-		cmake_policy( SET CMP0026 OLD )
+	if( "${CMAKE_VERSION}" VERSION_GREATER 2.8.12 )
+		set( ${_variableName} $<TARGET_FILE:${_target_NAME}> PARENT_SCOPE )
+	else()
+		get_target_property( _var ${_target_NAME} LOCATION )
+		set( ${_variableName} ${_var} PARENT_SCOPE )
 	endif()
-	get_target_property( _var ${_target_NAME} LOCATION )
-	set( ${_variableName} ${_var} PARENT_SCOPE )
-	cmake_policy(POP)
 endfunction()
 
 #############################################################################################################################################
@@ -75,7 +74,13 @@ function( program_link_libraries_preset _targetName )
 			message( STATUS "LIB: ${_libItem}" )
 			set( _libFullItem ${_libItem} )
 		endif()
-		set( _libList ${_libList} ${_libFullItem} )
+		string( LENGTH "${_libList}" _libListLen )
+		message( STATUS "_libListLen=${_libListLen}" )
+		if ( _libListLen EQUAL 0 )
+			set( _libList "${_libFullItem}" )
+		else()
+			set( _libList "${_libList}:${_libFullItem}" )
+		endif()
 	endforeach()
 	set( PROGRAM_LINK_LIBRARIES_VAR_${_targetName} ${ARGN} PARENT_SCOPE )
 	set( ANDROID_APPLICATION_LIBRARIES_FULLPATHS_${_targetName} ${_libList} PARENT_SCOPE )
@@ -103,6 +108,13 @@ macro( add_program _targetName )
 #		message( STATUS "ANDROID_DEPLOY_QT_RELEASE=ON" )
 #	endif()
 
+	# if we use official NDK cmake files then ANDROID_TOOLCHAIN_MACHINE_NAME is not defined
+	# (this is only used for antroiddeployqt)
+	if ( NOT ANDROID_TOOLCHAIN_MACHINE_NAME )
+		set( ANDROID_TOOLCHAIN_MACHINE_NAME "arm-linux-androideabi" )
+		set( ANDROID_COMPILER_VERSION "4.9" )
+	endif()
+
 	## Copy the android templates from qt install folder
 	## This line it should be in qt cmake files
 	message( STATUS "AndroidSrc=${_qt5Core_install_prefix}/src/android/java" )
@@ -117,7 +129,10 @@ macro( add_program _targetName )
 
 	# add build APK package rule
 	add_custom_target( ${_targetName}_build_apk
-		COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/QtAndroid_BuildAPK_${_targetName}.cmake
+		COMMAND ${CMAKE_COMMAND} 
+			-DCMAKE_ANDROID_APPLICATION_BINARY="${ANDROID_APPLICATION_BINARY_FULLPATH}"
+			-DCMAKE_ANDROID_APPLICATION_LIBRARIES="${ANDROID_APPLICATION_LIBRARIES_FULLPATHS}"
+			-P ${CMAKE_CURRENT_BINARY_DIR}/QtAndroid_BuildAPK_${_targetName}.cmake
 		DEPENDS ${_targetName}
 	)
 

@@ -76,19 +76,30 @@ case "${TARGET_PLATFORM}" in
 		echo "ANDROID_QT_ROOT=${ANDROID_QT_ROOT}"
 		echo "ANDROID_JAVA_HOME=${ANDROID_JAVA_HOME}"
 		echo "_________________________________________________________________________"
+
+		case "$ANDROID_TOOLCHAIN_FILE_PROVIDER" in
+			NDK) CMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" ;;
+			PROJECT) CMAKE_TOOLCHAIN_FILE="${PROJECT_DIR}/cmake/Android/AndroidToolchain.cmake" ;;
+		esac
+
 		cmake ${PROJECT_DIR} \
 			-DCMAKE_BUILD_TYPE=${ANDROID_BUILD_TYPE} \
 			-DCMAKE_PREFIX_PATH="${ANDROID_QT_ROOT}" \
-			-DCMAKE_TOOLCHAIN_FILE="${PROJECT_DIR}/cmake/Android/AndroidToolchain.cmake" \
-			-DLIBRARY_OUTPUT_PATH_ROOT="${BUILD_DIR}/LIBS" \
-			-DJAVA_HOME="${ANDROID_JAVA_HOME}" \
-			-DANDROID_NDK="${ANDROID_NDK_ROOT}" \
+			-DANDROID=True \
 			-DANDROID_SDK="${ANDROID_SDK_ROOT}" \
-			-DANDROID_STANDALONE_TOOLCHAIN="${ANDROID_ARM_TOOLCHAIN}" \
+			-DANDROID_NDK="${ANDROID_NDK_ROOT}" \
+			-DANDROID_TOOLCHAIN="${ANDROID_TOOLCHAIN}" \
+			-DANDROID_ABI="${ANDROID_ABI}" \
+			-DANDROID_STL=${ANDROID_STL} \
 			-DANDROID_NATIVE_API_LEVEL="${ANDROID_API_LEVEL}" \
-			-DANDROID_ABI="armeabi-v7a" \
-			-DANDROID_STL="gnustl_shared" \
-			-DANDROID=True
+			-DANDROID_PLATFORM="${ANDROID_API_LEVEL}" \
+			-DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" \
+			-DLIBRARY_OUTPUT_PATH_ROOT="${BUILD_DIR}/LIBS" \
+			-DJAVA_HOME="${ANDROID_JAVA_HOME}"
+
+			#-DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" \
+			#-DCMAKE_TOOLCHAIN_FILE="${PROJECT_DIR}/cmake/Android/AndroidToolchain.cmake" \
+			#-DANDROID_STANDALONE_TOOLCHAIN="${ANDROID_ARM_TOOLCHAIN}" \
 		;;
 
 	android-build)

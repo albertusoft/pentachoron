@@ -23,11 +23,12 @@ Steps of android build:
 binary output: 'build/android-release/APP/pentachoron/bin/QtApp-release-signed.apk'
 
 Tool versions on developer's platform:
-  - Ubuntu Linux 14.04
-  - Qt 5.9.1
+  - Ubuntu Linux 17.10
+  - Qt 5.11.2
   - Android SDK Tools 25.2.5
   - Android ADK Build-tools 25.0.3
   - Android SDK Platform 24-45
   - Android Support Repository Rev.47
+  - Android NDK r17
   - jdk1.8.0_131
 

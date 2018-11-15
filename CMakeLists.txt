@@ -11,10 +11,11 @@ include(CMacros.cmake)
 load_settingsfile( "${CMAKE_CURRENT_SOURCE_DIR}/app.conf" )
 load_settingsfile( "${CMAKE_CURRENT_SOURCE_DIR}/local.conf" )
 
-
 #############################################################################
 #                         Packages / Libraries                              #
 #############################################################################
+
+set( CMAKE_FIND_ROOT_PATH_MODE_PACKAGE NEVER )
 
 find_package( Threads REQUIRED )
 

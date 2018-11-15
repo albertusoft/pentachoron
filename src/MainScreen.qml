@@ -99,8 +99,8 @@ Rectangle {
 				Entity {
 					components: [
 						PointLight {
-							constantAttenuation : 0.0
-							linearAttenuation : 0.0
+							constantAttenuation : 0.3
+							linearAttenuation : 0.3
 							quadraticAttenuation : 0.0025
 						},
 						Transform {
@@ -149,6 +149,15 @@ Rectangle {
 
 			} // Scene3D.Entity
 		} // Scene3D
+
+		Text {
+			id: rotationDisplayText
+			anchors.horizontalCenter: scene3d.horizontalCenter
+			anchors.bottom: scene3d.bottom
+			font.pixelSize: page.height / 64
+			color: "white"
+			text: "---"
+		}
 
 		MouseArea {
 			anchors.fill: parent
@@ -253,7 +262,6 @@ Rectangle {
 		// ---------- Basic Control ----------
 
 		Rectangle {
-			anchors.fill: parent
 			color: Qt.lighter( mainScreen.color, 1.2 )
 
 			Column {
@@ -359,7 +367,6 @@ Rectangle {
 		// ---------- Full Control ----------
 
 		Rectangle {
-			anchors.fill: parent
 			color: Qt.lighter( mainScreen.color, 1.2 )
 
 			Grid {
@@ -387,7 +394,7 @@ Rectangle {
 						}
 						FullDial {
 							anchors.fill: parent
-							color: "#203020"							
+							color: "#203020"
 							onValueChanged: {
 								parent.value = value
 								updateRotationMatrix()
@@ -399,7 +406,6 @@ Rectangle {
 		}
 
 		Rectangle {
-			anchors.fill: parent
 			color: Qt.lighter( mainScreen.color, 1.2 )
 
 			property real side: Math.min( (controlLayout.width - mainScreen.gap)/2, controlLayout.height )
@@ -520,6 +526,7 @@ Rectangle {
 			if ( doublerotCheckBox.checkState==Qt.Unchecked ) {
 				// simple rotation
 				angles[ planeIndex ] = dialItem1.value
+				rotationDisplayText.text = mainScreen._PLANES[planeIndex] + ":" + angles[ planeIndex ].toFixed(1)
 			} else if ( isoclinicrotCheckBox.checkState==Qt.Unchecked ) {
 				// double rotation
 				angles[ planeIndex ] = dialItem1.value
@@ -532,7 +539,7 @@ Rectangle {
 
 			basicRotMat.angles = angles
 			pentachoronEntity.rotationMatrix = basicRotMat.matR
-
+			rotationDisplayText.text = ""
 		}
 
 		if (tabBar.currentIndex == 1) {
@@ -547,7 +554,7 @@ Rectangle {
 				allDials.itemAt(5).value
 			]
 			pentachoronEntity.rotationMatrix = allRotMat.matR
-
+			rotationDisplayText.text = ""
 		}
 
 		if (tabBar.currentIndex == 2) {
@@ -557,6 +564,13 @@ Rectangle {
 			specRotMat.angles = [ specData.get1(value), 0.0, specData.get2(value), 0.0, specData.get3(value), 0.0 ]
 			pentachoronEntity.rotationMatrix = specRotMat.matR
 
+			rotationDisplayText.text =
+					mainScreen._PLANES[0] + ":" + specRotMat.angles[0].toFixed(1) + "  " +
+					mainScreen._PLANES[1] + ":" + specRotMat.angles[1].toFixed(1) + "  " +
+					mainScreen._PLANES[2] + ":" + specRotMat.angles[2].toFixed(1) + "  " + 
+					mainScreen._PLANES[3] + ":" + specRotMat.angles[3].toFixed(1) + "  " + 
+					mainScreen._PLANES[4] + ":" + specRotMat.angles[4].toFixed(1) + "  " + 
+					mainScreen._PLANES[5] + ":" + specRotMat.angles[5].toFixed(1);
 		}
 
 	}

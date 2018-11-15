@@ -33,7 +33,7 @@ Entity {
 
 	property real axisLength: 1.0
 	property real axisWidth: 0.02
-	property real alpha: 1.0
+	property real alpha: 0.8
 
 	property color xcolor: "#802020"
 	property color ycolor: "#208020"

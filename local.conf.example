@@ -7,8 +7,8 @@ LINUX_QT_INSTALLER_PATH=/opt/Qt-5.9.1/Tools/QtInstallerFramework/3.0
 # Android Build
 ANDROID_NDK_ROOT=/opt/android/ndk
 ANDROID_SDK_ROOT=/opt/android/sdk
+ANDROID_JAVA_HOME=/opt/jdk1.8.0_131
 ANDROID_API_LEVEL="android-25"
-ANDROID_ARM_TOOLCHAIN=/opt/android/standalone/arm-linux-androideabi-4.9
 ANDROID_QT_ROOT=/opt/Qt-5.9.1/5.9.1/android_armv7
 ANDROID_BUILD_PATH=build/android-release
 ANDROID_BUILD_TYPE=Release
@@ -16,7 +16,6 @@ ANDROID_DEPLOY_QT_KEYSTOREPATH="/path/to/keyfile.jks"
 ANDROID_DEPLOY_QT_CERTIFICATEALIAS="apk-release"
 ANDROID_DEPLOY_QT_STOREPASS="*****"
 ANDROID_DEPLOY_QT_KEYPASS="*****"
-ANDROID_JAVA_HOME=/opt/jdk1.8.0_131
 
 # Win32
 WIN32_QT_ROOT=c:\Qt\5.9.1\mingw53_32

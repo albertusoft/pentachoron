@@ -28,13 +28,10 @@ import Qt3D.Core 2.0
 import Qt3D.Render 2.0
 import Qt3D.Extras 2.0
 
-//PhongAlphaMaterial // <-- this material type has alpha channel, but works wrongly in Qt-5.9.1 distribution
-PhongMaterial {
+PhongAlphaMaterial {
 	property color emit: "#FFFFFF"
-	property real alpha: 1.0
-	//alpha: 1.0
 	ambient: emit
-	diffuse: "#000000"
+	diffuse: emit
 	specular: "#000000"
 	shininess: 0.0
 }

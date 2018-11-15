@@ -73,17 +73,15 @@ macro( load_settingsfile _SettingsFileName )
 		string( REPLACE "${_Key}=" "" _Value ${_Line} ) # extract value
 		string( REGEX REPLACE "^[\"]+" "" _Value ${_Value} ) # remove leading quotes from value
 		string( REGEX REPLACE "[\"]+$" "" _Value ${_Value} ) # remove ending quotes from value
+		set( _Value ${_Value} ) # eval variables embedded in string
 		set( ${_Key} "${_Value}" )
 	endforeach()
 endmacro()
 
 function( get_target_location_property _variableName _target_NAME )
 	if ( ${CMAKE_MAJOR_VERSION} EQUAL "2" )
-		#cmake_policy(PUSH)
-		#cmake_policy( SET CMP0026 OLD )
 		get_target_property( _var ${_target_NAME} LOCATION )
 		set( ${_variableName} ${_var} PARENT_SCOPE )
-		#cmake_policy(POP)
 	else()
 		set( ${_variableName} $<TARGET_FILE:${_target_NAME}> PARENT_SCOPE )
 	endif()
@@ -178,4 +176,33 @@ endfunction()
 function( update_androidmainfest_versionnums )
 	execute_process( COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD OUTPUT_VARIABLE APP_REVISION_COUNT )
 endfunction()
+
+
+# -------------------------- PROPERTY LIST MACTO ----------------------------
+# Get all propreties that cmake supports
+execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE CMAKE__PROPERTY_LIST)
+
+# Convert command output into a CMake list
+STRING(REGEX REPLACE ";" "\\\\;" CMAKE__PROPERTY_LIST "${CMAKE__PROPERTY_LIST}")
+STRING(REGEX REPLACE "\n" ";" CMAKE__PROPERTY_LIST "${CMAKE__PROPERTY_LIST}")
+
+function( print_target_properties tgt )
+	if(NOT TARGET ${tgt})
+		message("There is no target named '${tgt}'")
+		return()
+	endif()
+	foreach (prop ${CMAKE__PROPERTY_LIST})
+		string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
+		if(prop STREQUAL "LOCATION" OR prop MATCHES "^LOCATION_" OR prop MATCHES "_LOCATION$")
+			continue()
+		endif()
+		# message ("Checking ${prop}")
+		get_property(propval TARGET ${tgt} PROPERTY ${prop} SET)
+		if (propval)
+			get_target_property(propval ${tgt} ${prop})
+			message ("${tgt} ${prop} = ${propval}")
+		endif()
+	endforeach(prop)
+endfunction()
+# ------------------------- PROPERTY LIST MACTO END --------------------------
 
